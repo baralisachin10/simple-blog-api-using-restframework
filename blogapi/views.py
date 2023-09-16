@@ -60,5 +60,28 @@ def update_post(request,id):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status = 200)
-        return Response(serializer.errors,stauts=400)
+        return Response(serializer.errors,status=400)
+    
+
+@api_view(['GET','DELETE','PUT'])
+def post_manipulate(request,id):
+    try:
+        post = Post.objects.get(id = id)
+    except Post.DoesNotExist:
+        return Response({'Error':'post not found'},status=404)
+
+    if request.method == 'GET':
+        serializer = PostSerializer(post)
+        return Response(serializer.data,status = 200)
+    
+    elif request.method == 'DELETE':
+        post.delete()
+        return Response({'success':'post deleted successfully'},status=200)
+    
+    elif request.method == 'PUT':
+        serializer = PostSerializer(post, data = request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data,status = 200)
+        return Response(serializer.errors,status = 400)
     
